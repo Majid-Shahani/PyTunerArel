@@ -1,0 +1,5 @@
+.venv/
+.idea/
+
+test.py
+main.py
