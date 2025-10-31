@@ -10,8 +10,8 @@ class Chunk:
 
 
 class RollingBuffer:
-    def __init__(self, number_of_chunks, chunk_size):
-        self.chunks = [Chunk(chunk_size) for _ in range(number_of_chunks)]
+    def __init__(self, number_of_chunks, chunk_size, data_type=np.float32):
+        self.chunks = [Chunk(chunk_size, data_type) for _ in range(number_of_chunks)]
         self.write_index = 0
         self.read_index = -1
         self.lock = threading.Lock()
