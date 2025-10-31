@@ -1,44 +1,8 @@
 import threading
 import time
-import math
 import numpy as np
-from audio import buffer
 from librosa import yin
-
-
-def _note_to_freq(note: int) -> float:
-    """Convert standard tuning notes on guitar to their frequency in Hz."""
-    note_frequencies = {
-        6: 82.41,
-        5: 110.00,
-        4: 146.83,
-        3: 196.00,
-        2: 246.94,
-        1: 329.63
-    }
-    return note_frequencies.get(note, 0.0)
-
-
-def _calculate_offset(frequency: float, target_frequency: float) -> int:
-    """Calculate the offset from range: -3 to +3, where 0 is in tune."""
-    temp = frequency - target_frequency
-    if -1 < temp < 1:
-        return 0
-    elif -5 < temp <= -1:
-        return -1
-    elif -10 < temp <= -5:
-        return -2
-    elif temp <= -10:
-        return -3
-    elif 1 <= temp < 5:
-        return 1
-    elif 5 <= temp < 10:
-        return 2
-    elif temp >= 10:
-        return 3
-    else:
-        return 5
-
+from audio import buffer
 
 class Processor:
     def __init__(self, rolling_buffer: buffer.RollingBuffer, fs, window_length):
@@ -61,7 +25,7 @@ class Processor:
                 frame = data.flatten()
                 f0 = yin(frame, fmin=50, fmax=500, sr=self._fs, frame_length=len(frame))
                 fundamental = np.median(f0)
-                print (f"Detected fundamental frequency: {fundamental:.2f} Hz")
+
             else:
                 time.sleep(0.01)
 
