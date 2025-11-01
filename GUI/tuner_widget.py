@@ -1,5 +1,4 @@
-from audio import buffer
-from audio.buffer import RollingBuffer
+import queue
 from PyQt6.QtCore import Qt, QPoint, QRect, QTimer, QPropertyAnimation, QEasingCurve
 from PyQt6.QtGui import QPixmap, QFont, QColor
 from PyQt6.QtWidgets import (
@@ -13,12 +12,25 @@ from PyQt6.QtWidgets import (
 )
 
 
+def _note_to_freq(note) -> float:
+    """Convert standard tuning notes on guitar to their frequency in Hz."""
+    note_frequencies = {
+        "E2": 82.41,
+        "A": 110.00,
+        "D": 146.83,
+        "G": 196.00,
+        "B": 246.94,
+        "E4": 329.63
+    }
+    return note_frequencies.get(note, 0.0)
+
+
 class TunerWidget(QWidget):
-    def __init__(self, buffer:RollingBuffer = None,parent=None):
+    def __init__(self, freq_input_buffer:queue.Queue = None, parent=None):
         super().__init__(parent)
 
         # Audio Buffer
-        self._buffer = buffer
+        self._buffer = freq_input_buffer
 
         # Rounded container styling
         self.image_label = QLabel(self)
@@ -36,6 +48,7 @@ class TunerWidget(QWidget):
         #Frequency tracking
         self.selected_frequency = None
         self.last_frequency = None
+        self._last_offset = None
 
         # Layout: message on top, guitar image container below
         self._root_layout = QVBoxLayout(self)
@@ -188,7 +201,7 @@ class TunerWidget(QWidget):
             self._set_selected_note("E2")
 
         self._frame_timer = QTimer(self)
-        self._frame_timer.setInterval(100)
+        self._frame_timer.setInterval(33)
         self._frame_timer.timeout.connect(self._on_frame)
         self._frame_timer.start()
 
@@ -196,7 +209,8 @@ class TunerWidget(QWidget):
         if not self._buffer:
             return
         try:
-            self.last_frequency = self._buffer.read()
+            while not self._buffer.empty():
+                self.last_frequency = self._buffer.get_nowait()
         except Exception:
             # swallow errors from audio buffer so GUI doesn't crash
             self.last_frequency = None
@@ -341,7 +355,7 @@ class TunerWidget(QWidget):
 
     def _set_selected_note(self, note: str):
         self.note_label.setText(note)
-        self.selected_frequency = self._note_to_freq(note)
+        self.selected_frequency = _note_to_freq(note)
         self._layout_info_labels()
 
 
@@ -351,17 +365,6 @@ class TunerWidget(QWidget):
 
 
     #Note to Frequency and offset calculator
-    def _note_to_freq(self, note) -> float:
-        """Convert standard tuning notes on guitar to their frequency in Hz."""
-        note_frequencies = {
-            "E2": 82.41,
-            "A": 110.00,
-            "D": 146.83,
-            "G": 196.00,
-            "B": 246.94,
-            "E4": 329.63
-        }
-        return note_frequencies.get(note, 0.0)
 
     def _calculate_offset(self) -> str:
         if self.last_frequency is None or self.selected_frequency is None:

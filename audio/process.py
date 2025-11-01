@@ -1,12 +1,17 @@
 import threading
 import time
+import multiprocessing as mp
+import queue
+
 import numpy as np
 from librosa import yin
 from audio import buffer
 
+
 class Processor:
-    def __init__(self, rolling_buffer: buffer.RollingBuffer, fs, window_length):
-        self._rolling_buffer = rolling_buffer
+    def __init__(self, input_buffer: buffer.RollingBuffer, output_buffer: mp.Queue, fs, window_length):
+        self._rolling_buffer = input_buffer
+        self._output = output_buffer
         self._fs = fs
         self._window_length = window_length
         self._enable = False
@@ -25,7 +30,10 @@ class Processor:
                 frame = data.flatten()
                 f0 = yin(frame, fmin=50, fmax=500, sr=self._fs, frame_length=len(frame))
                 fundamental = np.median(f0)
-
+                try:
+                    self._output.put_nowait(fundamental)
+                except queue.Full:
+                    pass
             else:
                 time.sleep(0.01)
 

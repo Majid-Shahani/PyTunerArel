@@ -1,15 +1,18 @@
+import queue
+
 from PyQt6.QtWidgets import QMainWindow
 from PyQt6.QtCore import QPoint
 from GUI.tuner_widget import TunerWidget
 from PyQt6.QtGui import QIcon
 
+from audio import buffer
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, output_queue: queue.Queue):
         super().__init__()
         self.setWindowTitle("Guitar Tuner")
 
-        self.ui = TunerWidget(self)
+        self.ui = TunerWidget(freq_input_buffer=output_queue)
         self.setCentralWidget(self.ui)
         self.setWindowIcon(QIcon(r"Resources\Pick_Icon.png"))
 
