@@ -201,7 +201,7 @@ class TunerWidget(QWidget):
             self._set_selected_note("E2")
 
         self._frame_timer = QTimer(self)
-        self._frame_timer.setInterval(33)
+        self._frame_timer.setInterval(66)
         self._frame_timer.timeout.connect(self._on_frame)
         self._frame_timer.start()
 

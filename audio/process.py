@@ -1,6 +1,5 @@
 import threading
 import time
-import multiprocessing as mp
 import queue
 
 import numpy as np
@@ -9,7 +8,7 @@ from audio import buffer
 
 
 class Processor:
-    def __init__(self, input_buffer: buffer.RollingBuffer, output_buffer: mp.Queue, fs, window_length):
+    def __init__(self, input_buffer: buffer.RollingBuffer, output_buffer: queue.Queue, fs, window_length):
         self._rolling_buffer = input_buffer
         self._output = output_buffer
         self._fs = fs
