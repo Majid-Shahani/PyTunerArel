@@ -4,6 +4,7 @@ import sounddevice
 
 from PyQt6.QtWidgets import QApplication
 from GUI.main_window import MainWindow
+from GUI.plots_window import PlotsWindow
 
 from audio import buffer, capture, process
 
@@ -27,7 +28,9 @@ def main():
 
     app = QApplication(sys.argv)
     window = MainWindow(output_buffer)
+    plots_win = PlotsWindow(circular_buffer, output_buffer, SAMPLERATE, WINDOW_LENGTH)
     window.show()
+    plots_win.show()
     code = app.exec()
 
     processor.stop_processing()
