@@ -1,9 +1,8 @@
-# python
 import queue
 from collections import deque
-
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout
 from PyQt6.QtCore import QTimer
+from PyQt6.QtGui import QIcon
 import pyqtgraph as pg
 import numpy as np
 
@@ -16,6 +15,8 @@ class PlotsWindow(QMainWindow):
         self._output_buffer = output_queue
         self._fs = fs
         self._window_length = window_length
+
+        self.setWindowIcon(QIcon(r"Resources\bar.png"))
 
         # Create three stacked pyqtgraph plots
         self.plot_raw = pg.PlotWidget(title="Raw Signal")

@@ -369,9 +369,9 @@ class TunerWidget(QWidget):
     def _calculate_offset(self) -> str:
         if self.last_frequency is None or self.selected_frequency is None:
             return "No Frequency"
-        """Calculate the offset from range: -3 to +3, where 0 is in tune."""
-        temp = self.last_frequency - self.selected_frequency
-        if -0.3 < temp < 0.3:
+        """Calculate the offset in percentage from the selected frequency."""
+        temp = (self.last_frequency - self.selected_frequency)/(self.selected_frequency*0.01)
+        if -0.5 < temp < 0.5:
             return "PERFECT!"
         elif -1 < temp < 1:
             return "It's Great"

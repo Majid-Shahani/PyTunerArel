@@ -1,6 +1,8 @@
 import queue
-
-from PyQt6.QtWidgets import QMainWindow
+from collections import deque
+from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout
+from PyQt6.QtCore import QTimer
+import numpy as np
 from PyQt6.QtCore import QPoint
 from GUI.tuner_widget import TunerWidget
 from PyQt6.QtGui import QIcon
@@ -13,7 +15,7 @@ class MainWindow(QMainWindow):
 
         self.ui = TunerWidget(freq_input_buffer=output_queue)
         self.setCentralWidget(self.ui)
-        self.setWindowIcon(QIcon(r"Resources\Pick_Icon.png"))
+        self.setWindowIcon(QIcon(r"Resources\pick.png"))
 
         # Replace with your selected image file
         self.ui.set_background_image("Resources/Guitar_Head.png")
