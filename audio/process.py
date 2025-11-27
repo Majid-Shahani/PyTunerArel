@@ -17,24 +17,24 @@ class Processor:
         self._thread = None
 
     def _process_loop(self):
-        while self._enable:
-            data = self._rolling_buffer.read()
-            if data is not None:
-                rms = np.sqrt(np.mean(data ** 2))
-                threshold = 0.0075
-                if rms < threshold:
-                    time.sleep(0.01)
-                    continue
+        while self._enable: # Main processing loop
+            data = self._rolling_buffer.read() # Read audio data from the rolling buffer
+            if data is not None: # If data is available
+                rms = np.sqrt(np.mean(data ** 2)) # Calculate RMS to check signal strength
+                threshold = 0.0075 # Threshold to ignore low-amplitude signals
+                if rms < threshold:# If signal is too weak, skip processing
+                    time.sleep(0.01) # Sleep briefly to avoid busy-waiting
+                    continue # Continue to the next iteration
 
-                frame = data.flatten()
-                f0 = yin(frame, fmin=50, fmax=500, sr=self._fs, frame_length=len(frame))
-                fundamental = np.median(f0)
+                frame = data.flatten() # Flatten the audio data
+                f0 = yin(frame, fmin=50, fmax=500, sr=self._fs, frame_length=len(frame)) # Apply YIN algorithm to estimate fundamental frequency
+                fundamental = np.median(f0) # Take the median of the estimated frequencies
                 try:
-                    self._output.put_nowait(fundamental)
-                except queue.Full:
+                    self._output.put_nowait(fundamental) # Output the estimated frequency to the output queue
+                except queue.Full: # If the output queue is full, skip this value
                     pass
             else:
-                time.sleep(0.01)
+                time.sleep(0.01) # Sleep briefly if no data is available
 
     def start_processing(self):
         if not self._enable:

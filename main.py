@@ -9,7 +9,7 @@ from GUI.plots_window import PlotsWindow
 from audio import buffer, capture, process
 
 AUDIO_CHANNELS = 1  # Mono channel
-SAMPLERATE = 44100  # 441.k Hz
+SAMPLERATE = 44100  # 44.1k Hz
 WINDOW_LENGTH = 8192  # Window length by Sample Count
 
 
