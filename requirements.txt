@@ -4,3 +4,4 @@ librosa==0.11.0
 matplotlib==3.10.7
 sounddevice==0.5.3
 pyqt6==6.10.0
+pyqtgraph==0.14.0
