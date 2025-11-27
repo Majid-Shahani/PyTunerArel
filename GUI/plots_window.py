@@ -28,6 +28,15 @@ class PlotsWindow(QMainWindow):
         self.plot_fft.setLabel('left', 'Magnitude')
         self.plot_yin.setLabel('left', 'Frequency', units='Hz')
 
+        # Disable auto-range and fix y-axis to -40..40
+        self.plot_raw.enableAutoRange(axis=pg.ViewBox.YAxis, enable=False)
+        self.plot_raw.setYRange(-0.20, 0.20)
+
+        self.plot_fft.enableAutoRange(axis=pg.ViewBox.XAxis, enable=False)
+        self.plot_fft.setXRange(0, 3000)
+        self.plot_fft.enableAutoRange(axis=pg.ViewBox.YAxis, enable=False)
+        self.plot_fft.setYRange(0, 100)
+
         central = QWidget()
         layout = QVBoxLayout()
         layout.setContentsMargins(6, 6, 6, 6)
@@ -64,14 +73,17 @@ class PlotsWindow(QMainWindow):
             frame = np.asarray(data).flatten()
             if frame.size > 0:
                 # Raw
-                self.raw_curve.setData(frame)
+                frame_vis = np.clip(frame, -0.20, 0.20)
+                self.raw_curve.setData(frame_vis)
 
                 # FFT
-                win = np.hanning(len(frame))
-                spectrum = np.fft.rfft(frame * win)
-                mags = np.abs(spectrum)
-                freqs = np.fft.rfftfreq(len(frame), d=1.0 / self._fs)
-                self.fft_curve.setData(freqs, mags)
+                win = np.hanning(len(frame)) # Hanning window
+                spectrum = np.fft.rfft(frame * win) # Compute FFT with window
+                mags = np.abs(spectrum) # Magnitudes
+                freqs = np.fft.rfftfreq(len(frame), d=1.0 / self._fs) # Frequencies
+                freq_vis = np.clip(freqs, 0, 3000) # Limit frequency axis to 3 kHz
+                mags_vis = np.clip(mags, 0, 100)
+                self.fft_curve.setData(freq_vis, mags_vis) # Plot FFT
 
         # Drain YIN output queue non-blocking
         try:
