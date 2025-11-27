@@ -34,4 +34,5 @@ class RollingBuffer:
             if not self.chunks[index].ready:
                 return None
             out = self.chunks[index].data.copy()
+            self.chunks[index].ready = False
         return out
