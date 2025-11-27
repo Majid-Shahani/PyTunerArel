@@ -23,9 +23,9 @@ class MainWindow(QMainWindow):
 
         # Adjust these to align with your tuning pegs
         self.ui.set_button_positions({
-            "E2": QPoint(105, 205),
+            "D": QPoint(105, 205),
             "A": QPoint(105, 295),
-            "D": QPoint(105, 385),
+            "E2": QPoint(105, 385),
             "G": QPoint(460, 205),
             "B": QPoint(460, 295),
             "E4": QPoint(460, 385),
