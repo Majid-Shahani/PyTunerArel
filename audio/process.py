@@ -26,8 +26,7 @@ class Processor:
                     time.sleep(0.01) # Sleep briefly to avoid busy-waiting
                     continue # Continue to the next iteration
 
-                frame = data.flatten() # Flatten the audio data
-                f0 = yin(frame, fmin=50, fmax=500, sr=self._fs, frame_length=len(frame)) # Apply YIN algorithm to estimate fundamental frequency
+                f0 = yin(data, fmin=50, fmax=500, sr=self._fs, frame_length=len(data)) # Apply YIN algorithm to estimate fundamental frequency
                 fundamental = np.median(f0) # Take the median of the estimated frequencies
                 try:
                     self._output.put_nowait(fundamental) # Output the estimated frequency to the output queue
@@ -39,7 +38,7 @@ class Processor:
     def start_processing(self):
         if not self._enable:
             self._enable = True
-            self._thread = threading.Thread(target=self._process_loop, daemon=True)
+            self._thread = threading.Thread(target=self._process_loop, daemon=False)
             self._thread.start()
 
     def stop_processing(self):
